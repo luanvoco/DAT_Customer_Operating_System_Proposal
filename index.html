@@ -401,6 +401,20 @@
 
   section[id] { scroll-margin-top: 80px; }
 
+  .mobile-nav-link {
+    display: block;
+    padding: 12px 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--body);
+    border-radius: 8px;
+    transition: all 0.15s;
+  }
+  .mobile-nav-link:hover {
+    background: var(--bg-subtle);
+    color: var(--ink);
+  }
+
   /* ==== BU PIPELINE TABS (Level 3 — Multi-Pipeline selector) ==== */
   .bu-tabs {
     display: flex;
@@ -528,34 +542,44 @@
 
     /* Tab list on mobile: horizontal scroll instead of vertical */
     .tabs-mobile-horizontal {
-      display: flex;
-      overflow-x: auto;
-      scrollbar-width: none;
-      gap: 8px;
-      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
       border-bottom: 1px solid var(--border);
       border-right: none !important;
+      overflow: visible;
     }
-    .tabs-mobile-horizontal::-webkit-scrollbar { display: none; }
     .tabs-mobile-horizontal .tab-item {
-      flex-shrink: 0;
+      flex-shrink: unset;
       border-left: none !important;
       border-bottom: 3px solid transparent;
-      padding: 12px 16px;
-      border-radius: 8px;
-      background: var(--bg-subtle);
-      min-width: 140px;
+      border-right: 1px solid var(--border);
+      padding: 10px 4px;
+      border-radius: 0;
+      background: white;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .tabs-mobile-horizontal .tab-item:last-child {
+      border-right: none;
     }
     .tabs-mobile-horizontal .tab-item.active {
-      background: var(--dat-blue);
-      border-bottom-color: transparent;
+      background: var(--dat-blue-lighter);
+      border-bottom-color: var(--dat-blue);
     }
     .tabs-mobile-horizontal .tab-item.active .tab-title,
     .tabs-mobile-horizontal .tab-item.active .tab-number {
-      color: white;
+      color: var(--dat-blue-dark);
+    }
+    .tabs-mobile-horizontal .tab-item .tab-number {
+      font-size: 11px;
     }
     .tabs-mobile-horizontal .tab-item .tab-title {
-      font-size: 13px;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.3;
     }
     .tabs-mobile-horizontal .tab-item .tab-desc,
     .tabs-mobile-horizontal .tab-item .tab-arrow,
@@ -582,7 +606,6 @@
 <nav class="sticky top-0 z-50 bg-white/85 backdrop-blur-xl border-b border-subtle no-print">
   <div class="max-w-7xl mx-auto px-4 lg:px-10 h-16 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <!-- Base logo with fallback -->
       <img src="./images/logo-base.png" alt="Base.vn" class="logo-img">
       <span class="text-muted text-sm hidden md:inline">·</span>
       <span class="text-muted text-sm hidden md:inline">Proposal cho</span>
@@ -595,10 +618,32 @@
       <a href="#capabilities" class="nav-link" data-nav>Năng lực COS</a>
       <a href="#kpi" class="nav-link" data-nav>Chỉ số thành công</a>
     </div>
-    <a href="#cta" class="btn-primary text-sm hidden sm:inline-flex">
-      Trao đổi
-      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-    </a>
+    <div class="flex items-center gap-3">
+      <a href="#cta" class="btn-primary text-sm hidden sm:inline-flex">
+        Trao đổi
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+      <!-- Hamburger button (mobile only) -->
+      <button id="nav-toggle" class="lg:hidden" aria-label="Menu" style="display:flex;flex-direction:column;justify-content:center;align-items:center;width:40px;height:40px;gap:5px;background:none;border:none;cursor:pointer;padding:8px;border-radius:8px;">
+        <span id="hb-1" style="display:block;width:22px;height:2px;background:var(--ink);border-radius:2px;transition:all 0.25s;"></span>
+        <span id="hb-2" style="display:block;width:22px;height:2px;background:var(--ink);border-radius:2px;transition:all 0.25s;"></span>
+        <span id="hb-3" style="display:block;width:22px;height:2px;background:var(--ink);border-radius:2px;transition:all 0.25s;"></span>
+      </button>
+    </div>
+  </div>
+  <!-- Mobile menu dropdown -->
+  <div id="mobile-menu" class="lg:hidden hidden border-t border-subtle bg-white/95 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-1">
+      <a href="#context" class="mobile-nav-link" onclick="closeMobileMenu()">Bối cảnh</a>
+      <a href="#challenges" class="mobile-nav-link" onclick="closeMobileMenu()">Thách thức</a>
+      <a href="#cos" class="mobile-nav-link" onclick="closeMobileMenu()">Tổng quan COS</a>
+      <a href="#capabilities" class="mobile-nav-link" onclick="closeMobileMenu()">Năng lực COS</a>
+      <a href="#kpi" class="mobile-nav-link" onclick="closeMobileMenu()">Chỉ số thành công</a>
+      <a href="#cta" class="btn-primary text-sm justify-center mt-2" onclick="closeMobileMenu()">
+        Trao đổi ngay
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+    </div>
   </div>
 </nav>
 
@@ -2247,14 +2292,26 @@
       document.querySelectorAll(`[data-tab="${tabGroup}"]`).forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
 
-      // Update panel states - use sub-panel for sub-tabs, tab-panel for main tabs
+      // Update panel states
       const isSubTab = tabGroup.includes('-sub');
-      const panelSelector = isSubTab ? '.sub-panel' : '.tab-panel';
       document.querySelectorAll(`[data-panel="${tabGroup}"]`).forEach(p => p.classList.remove('active'));
 
       const newPanel = document.querySelector(`[data-panel="${tabGroup}"][data-id="${target}"]`);
       if (newPanel) {
-        setTimeout(() => newPanel.classList.add('active'), 10);
+        setTimeout(() => {
+          newPanel.classList.add('active');
+          // On mobile: scroll to content panel after tab click
+          if (window.innerWidth < 1024) {
+            setTimeout(() => {
+              const panelContainer = newPanel.closest('.lg\\:col-span-7') || newPanel.closest('.lg\\:col-span-8');
+              if (panelContainer) {
+                panelContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              } else {
+                newPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }, 50);
+          }
+        }, 10);
       }
     });
   });
@@ -2307,6 +2364,37 @@
       if (panel) setTimeout(() => panel.classList.add('active'), 10);
     });
   });
+
+  // ============ MOBILE MENU ============
+  const navToggle = document.getElementById('nav-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const hb1 = document.getElementById('hb-1');
+  const hb2 = document.getElementById('hb-2');
+  const hb3 = document.getElementById('hb-3');
+  let menuOpen = false;
+
+  // Hide on desktop
+  function updateNavToggleVisibility() {
+    navToggle.style.display = window.innerWidth >= 1024 ? 'none' : 'flex';
+  }
+  updateNavToggleVisibility();
+  window.addEventListener('resize', updateNavToggleVisibility);
+
+  navToggle.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    mobileMenu.classList.toggle('hidden', !menuOpen);
+    hb1.style.transform = menuOpen ? 'translateY(7px) rotate(45deg)' : '';
+    hb2.style.opacity = menuOpen ? '0' : '1';
+    hb3.style.transform = menuOpen ? 'translateY(-7px) rotate(-45deg)' : '';
+  });
+
+  function closeMobileMenu() {
+    menuOpen = false;
+    mobileMenu.classList.add('hidden');
+    hb1.style.transform = '';
+    hb2.style.opacity = '1';
+    hb3.style.transform = '';
+  }
 
   // ============ HANDLE LOGO FALLBACK on initial check ============
   // Some images error before JS loads - re-check
